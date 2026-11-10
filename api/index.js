@@ -1,6 +1,6 @@
 'use strict';
 const { URL } = require('node:url');
-const app = require('../src/server');
+const app = require('../src/qatta-handler');
 
 module.exports = function qattaVercelHandler(req, res) {
   // vercel.json rewrites requests through /api/index and carries the original
