@@ -4,7 +4,7 @@
   "private": true,
   "description": "QATTA — Telegram-native interactive widgets for shared money goals",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "node src/qatta-handler.js",
     "test": "node --test"
   },
   "engines": {
