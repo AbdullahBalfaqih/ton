@@ -5,12 +5,7 @@
   ],
   "functions": {
     "api/index.js": {
-      "includeFiles": [
-        "src/**",
-        "public/**",
-        "data.json",
-        "node_modules/@tonconnect/ui/dist/tonconnect-ui.min.js"
-      ]
+      "includeFiles": "{src/**,public/**,data.json,node_modules/@tonconnect/ui/dist/tonconnect-ui.min.js}"
     }
   }
 }
