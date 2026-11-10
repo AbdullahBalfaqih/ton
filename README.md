@@ -32,9 +32,15 @@ The workspace dashboard is served at `http://localhost:3000`. It starts with **n
 
 For local development, `BOT_POLLING=1` enables long polling and removes any webhook currently configured for that bot. For a stable deployment, use HTTPS plus the configured Telegram webhook instead. Do not run polling and webhook delivery at the same time.
 
-## TON payments: one recipient per goal, no wallet binding
+## Vercel deployment
 
-The organizer pastes a **public TON receiving address once for that goal**; it is not connected to the organizer's Telegram account. Contributors do not register or permanently link wallets. At checkout the Widget asks Telegram's built-in wallet to show the exact transaction, and the contributor approves or rejects it. QATTA never has custody of wallet keys and never signs or sends a payment on a customer's behalf.
+`api/index.js` adapts the HTTP router to a Vercel Function; `vercel.json` rewrites requests through that handler. Set `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME=Qatta_Bot`, `PUBLIC_BASE_URL=https://<your-project>.vercel.app`, and a random `TELEGRAM_WEBHOOK_SECRET` in Vercel Environment Variables. Leave `BOT_POLLING` off on Vercel; configure Telegram to call `/telegram/webhook` with the authenticated `/api/telegram/configure-webhook` endpoint.
+
+Vercel's function filesystem is temporary. This preview writes to `/tmp`, reports that in `/api/health`, and intentionally disables contributions on Vercel so payments cannot be accepted without durable state or a recurring TON verifier. Attach a durable database and verifier/cron worker before enabling real payments or treating campaign changes as persistent. Never upload `.env` to GitHub.
+
+## TON payments: direct recipient, optional account wallet
+
+The organizer sets a **public TON receiving address for each goal**. Users may optionally connect a TON wallet at the QATTA account/device level; TON Connect remembers the session on that device until the user disconnects. This stores no private keys, and each payment still requires a separate approval in the wallet. Transfers go directly to the goal's organizer; QATTA never pools funds or signs on a user's behalf.
 
 The receiving address field is currently optional so a goal/invite can be prepared first. **Checkout stays disabled until a valid public EQ…/UQ… address is saved.** For payment, the server obtains a live USD/TON quote (CoinGecko by default), builds a TON transaction with a unique invoice comment, and polls TON Center v2 over HTTPS every 15 seconds. It matches the receiving address, sender, exact nanoTON value, invoice comment and successful transaction before updating progress. The Telegram-reported message hash alone is never treated as proof. `TONCENTER_API_KEY` is optional for low-volume development and recommended for rate limits in production.
 
